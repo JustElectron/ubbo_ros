@@ -1,17 +1,12 @@
 
 #include "ubbo_ros/ubbo_ros.h"
 
-UbboRos::UbboRos(ros::NodeHandle& nh): _nh(nh){ 
+UbboRos::UbboRos(ros::NodeHandle& nh): _nh(nh), _priv_nh("~"){ 
 
-    nh.param<std::string>("port", _port, "/dev/ttyACM0");
-    nh.param<int>("baud", _baud, 9600);
-
-    ROS_INFO("[UBBO] Baud rate [%i]", _baud);
-
-    _ubbo->setBaud(9600);
+    _priv_nh.param<std::string>("port", _port, "/dev/ttyACM0");
+    _priv_nh.param<int>("baud", _baud, 57600);
 
     _ubbo = new ubbo::Ubbo(_port, _baud);
-    _ubbo->connect(_port, _baud);
 
     if (!_ubbo->isConnected()){
         if (!_ubbo->connect(_port, _baud)){

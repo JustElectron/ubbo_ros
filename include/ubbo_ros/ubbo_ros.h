@@ -17,6 +17,7 @@ class UbboRos {
 
     protected:
     ros::NodeHandle _nh;
+    ros::NodeHandle _priv_nh;
     ros::Subscriber _cmd_vel_sub;
 
     public:

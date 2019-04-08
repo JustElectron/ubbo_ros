@@ -5,4 +5,4 @@ port: "/dev/ttyACM0"
 baud: 9600
 
 # Internal loop rate (Hz).
-loop_rate: 10.0
+#loop_rate: 10.0
