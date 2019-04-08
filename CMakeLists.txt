@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ubbo_ROS)
+project(ubbo_ros)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
+
+find_package(libubbo REQUIRED PATHS ~/repos/libubbo/install)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  libubbo
   roscpp
   std_msgs
 )
@@ -103,26 +104,31 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES ubbo_ROS
-#  CATKIN_DEPENDS libubbo roscpp std_msgs
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  # LIBRARIES ubbo_ros
+  CATKIN_DEPENDS roscpp std_msgs
+  DEPENDS libubbo #system_lib
 )
 
 ###########
 ## Build ##
 ###########
 
+message(INFO "Catkin include  dirs ${catkin_INCLUDE_DIRS}")
+message(INFO "Lib ubbo include  dirs ${libubbo_INCLUDE_DIRS}")
+message(INFO "Lib ubbo include  dirs ${libubbo_DIR}")
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
+  ${libubbo_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/ubbo_ROS.cpp
+#   src/${PROJECT_NAME}/ubbo_ros.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -133,7 +139,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/ubbo_ROS_node.cpp)
+ add_executable(${PROJECT_NAME}_node src/ubbo_ros.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -143,12 +149,13 @@ include_directories(
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+ target_link_libraries(${PROJECT_NAME}_node
+   ${libubbo_LIBRARIES}
+   ${catkin_LIBRARIES}
+ )
 
 #############
 ## Install ##
@@ -190,7 +197,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_ubbo_ROS.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_ubbo_ros.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
