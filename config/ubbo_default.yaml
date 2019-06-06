@@ -2,7 +2,13 @@
 port: "/dev/ttyACM0"
 
 # Device baud rate.
-baud: 9600
+baud: 57600
 
 # Internal loop rate (Hz).
-#loop_rate: 10.0
+loop_rate: 10.0
+
+# Odom frame Id
+odom_frame: odom
+
+# Base frame Id
+base_frame: base_footprint

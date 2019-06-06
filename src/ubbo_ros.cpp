@@ -5,6 +5,9 @@ UbboRos::UbboRos(ros::NodeHandle& nh): _nh(nh), _priv_nh("~"){
 
     _priv_nh.param<std::string>("port", _port, "/dev/ttyACM0");
     _priv_nh.param<int>("baud", _baud, 57600);
+    _priv_nh.param<std::string>("base_frame", _base_frame, "base_footprint");
+    _priv_nh.param<std::string>("odom_frame", _odom_frame, "odom");
+    
 
     _ubbo = new ubbo::Ubbo(_port, _baud);
 
@@ -20,43 +23,58 @@ UbboRos::UbboRos(ros::NodeHandle& nh): _nh(nh), _priv_nh("~"){
 
     ROS_INFO_STREAM("[UBBO] Serial port " << _ubbo->getPort() << " Baud rate " << _ubbo->getBaud());
 
+    _tf_odom.header.frame_id = _odom_frame;
+    _tf_odom.child_frame_id = _base_frame;
+    _odom_msg.header.frame_id = _odom_frame;
+    _odom_msg.child_frame_id = _base_frame;
+
     _cmd_vel_sub = nh.subscribe("cmd_vel", 1, &UbboRos::cmdVelCallback, this);
+
+    _odom_pub = nh.advertise<nav_msgs::Odometry>("odom", 10);
 }
 
 void UbboRos::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg){
-    ROS_INFO("[UBBO] cmd_vel received.");
-    uint8_t forward = 90;
-    uint8_t turn = 0;
-    if (msg->linear.x > 0.0){
-        ROS_INFO_STREAM("Subscriber velocities:"<<" linear="<<msg->linear.x<<" angular="<<msg->angular.z);
-        _ubbo->driveForward(forward);
-    }
-    else if (msg->linear.x < 0.0){
-        _ubbo->driveBackward(forward);
-    }
-    else if (msg->angular.z > 0.0){
-        _ubbo->driveForward(turn);
-    }
-    else if (msg->angular.z < 0.0){
-        _ubbo->driveBackward(turn);
-    }
-    else {
+    float vel_x = msg->linear.x;
+    float vel_y = msg->linear.y;
+    float ang_z = msg->angular.z;
 
-    }
+    _ubbo->drive(vel_x, vel_y, ang_z);
+}
+
+void UbboRos::publishOdom(){
+    float pose_x = _ubbo->position_x;
+    float pose_y = _ubbo->position_y;
+    
+    geometry_msgs::Quaternion quat = tf::createQuaternionMsgFromRollPitchYaw(0, 0, _ubbo->rotation_z);
+    _odom_msg.header.stamp = ros::Time::now();
+    _odom_msg.pose.pose.position.x = pose_x;
+    _odom_msg.pose.pose.position.y = pose_y;
+    _odom_msg.pose.pose.orientation = quat;
+
+    _tf_odom.header.stamp = ros::Time::now();
+    _tf_odom.transform.translation.x = pose_x;
+    _tf_odom.transform.translation.y = pose_y;
+    _tf_odom.transform.rotation = quat;
+    _tf_broadcaster.sendTransform(_tf_odom);
+
+    _odom_pub.publish(_odom_msg);
 }
 
 int main(int argc, char** argv)
 {
 
     ros::init(argc, argv, "ubboRos");
-    ros::NodeHandle nh; 
+    ros::NodeHandle nh;
+    double loop_rate = 10.0;
+    priv_nh_.param<double>("loop_rate", loop_rate, 10.0);
 
     UbboRos ubbo(nh);
 
-    ros::Rate rate(2);
+    ros::Rate rate(loop_rate);
     
     while (ros::ok())
     {
+        ubbo.publishOdom();
         rate.sleep();
 
         ros::spinOnce();
