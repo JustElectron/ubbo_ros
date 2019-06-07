@@ -1,5 +1,9 @@
 
 #include "ubbo_ros/ubbo_ros.h"
+#include <nav_msgs/Odometry.h>
+#include <tf/transform_broadcaster.h>
+#include <geometry_msgs/TransformStamped.h>
+
 
 UbboRos::UbboRos(ros::NodeHandle& nh): _nh(nh), _priv_nh("~"){ 
 
@@ -38,14 +42,14 @@ void UbboRos::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg){
     float vel_y = msg->linear.y;
     float ang_z = msg->angular.z;
 
-    _ubbo->drive(vel_x, vel_y, ang_z);
+    _ubbo->drive(vel_x, -vel_y, -ang_z);
 }
 
 void UbboRos::publishOdom(){
-    float pose_x = _ubbo->position_x;
-    float pose_y = _ubbo->position_y;
+    float pose_x = _ubbo->position.x;
+    float pose_y = _ubbo->position.y;
     
-    geometry_msgs::Quaternion quat = tf::createQuaternionMsgFromRollPitchYaw(0, 0, _ubbo->rotation_z);
+    geometry_msgs::Quaternion quat = tf::createQuaternionMsgFromRollPitchYaw(0, 0, _ubbo->position.yaw);
     _odom_msg.header.stamp = ros::Time::now();
     _odom_msg.pose.pose.position.x = pose_x;
     _odom_msg.pose.pose.position.y = pose_y;
@@ -66,7 +70,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "ubboRos");
     ros::NodeHandle nh;
     double loop_rate = 10.0;
-    priv_nh_.param<double>("loop_rate", loop_rate, 10.0);
+    nh.param<double>("loop_rate", loop_rate, 10.0);
 
     UbboRos ubbo(nh);
 

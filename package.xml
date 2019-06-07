@@ -30,6 +30,10 @@
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
 
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf</depend>
+
   <build_export_depend>libubbo</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
