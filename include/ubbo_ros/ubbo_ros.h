@@ -8,6 +8,7 @@
 #include <geometry_msgs/TransformStamped.h>
 
 #include "ubbo/ubbo.h"
+#include "ubbo_ros/Proxim_sensor.h"
 
 class UbboRos {
     private:
@@ -18,6 +19,8 @@ class UbboRos {
     std::string _base_frame;
     std::string _odom_frame;
 
+    ubbo_ros::Proxim_sensor _prox_sensor_msg;
+
     nav_msgs::Odometry _odom_msg;
     tf::TransformBroadcaster _tf_broadcaster;
     geometry_msgs::TransformStamped _tf_odom;
@@ -27,12 +30,16 @@ class UbboRos {
     protected:
     ros::NodeHandle _nh;
     ros::NodeHandle _priv_nh;
+
     ros::Subscriber _cmd_vel_sub;
+    
     ros::Publisher _odom_pub;
+    ros::Publisher _proxim_pub;
 
     public:
     explicit UbboRos(ros::NodeHandle& nh);
     void publishOdom();
+    void publishProximity();
 
 };
 
