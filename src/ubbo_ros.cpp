@@ -26,8 +26,6 @@ UbboRos::UbboRos(ros::NodeHandle& nh): _nh(nh), _priv_nh("~"){
 
     ROS_INFO("[UBBO] Connection established.");
 
-    ROS_INFO_STREAM("[UBBO] Serial port " << _ubbo->getPort() << " Baud rate " << _ubbo->getBaud());
-
     _tf_odom.header.frame_id = _odom_frame;
     _tf_odom.child_frame_id = _base_frame;
     _odom_msg.header.frame_id = _odom_frame;
