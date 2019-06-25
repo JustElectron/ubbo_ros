@@ -4,11 +4,10 @@ This is a ROS package for driving the Ubbo Maker telepresence robot. It has been
 The project is created as a part of a bachelor project in electronics engineering. 
 
 * Author: Andreas Just Rønning
-* ROS driver: [ubbo_ros](https://github.com/JustElectron/ubbo_ros)
 
 ## Dependencies
 
-* [libubbo](https://github.com/wjwwood/serial) cross-platrofm c++ library.
+* [libubbo](https://github.com/JustElectron/libubbo) C++ library for interfacing with libubbo.
 * [CMake](https://cmake.org/) Build system
 
 ### Build
