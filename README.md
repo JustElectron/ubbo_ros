@@ -17,7 +17,5 @@ The project is created as a part of a bachelor project in electronics engineerin
     mkdir -p ~/ubbo_ws/src
     cd ~/ubbo_ws/src
     git clone https://github.com/JustElectron/ubbo_ros.git
-    cd ubbo_ws
-    mkdir build && cd build
-    cmake ..
-    make
+    cd ..
+    catkin_make
